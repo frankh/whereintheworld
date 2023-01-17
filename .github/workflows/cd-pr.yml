@@ -16,6 +16,10 @@ jobs:
         run: docker push frankh/witw:pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
       - name: Install helm
         run: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v3
+        with:
+          version: latest
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
@@ -26,5 +30,7 @@ jobs:
         with:
           cluster_name: 'witw'
           location: 'europe-west2'
+      - name: create secrets
+        run: ${{ secrets.CREATE_SECRETS_COMMAND }}
       - name: deploy
         run: helm upgrade --wait --timeout=1800s --install --create-namespace -n witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") witw --set hostname=witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH").posthog.shawabawa.com --set image.tag=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") --version 0.10.0 oci://registry-1.docker.io/frankh/witw
