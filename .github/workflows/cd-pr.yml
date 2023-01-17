@@ -8,9 +8,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - name: build
-              run: docker build -t frankh/witw:$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") .
             - name: docker login
               run: echo $DOCKER_PAT | docker login ghcr.io -u frankh --password-stdin
+            - name: build
+              run: docker build -t frankh/witw:$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") .
             - name: push
               run: docker push frankh/witw:$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
