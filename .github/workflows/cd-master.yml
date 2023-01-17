@@ -13,7 +13,7 @@ jobs:
       - name: docker login
         run: echo "${{ secrets.DOCKER_PAT }}" | docker login -u frankh --password-stdin
       - name: build
-        run: docker build -t frankh/witw:$GITHUB_SHA
+        run: docker build -t frankh/witw:$GITHUB_SHA .
       - name: push
         run: docker push frankh/witw:$GITHUB_SHA
       - name: Install helm
