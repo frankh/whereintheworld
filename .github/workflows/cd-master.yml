@@ -1,7 +1,9 @@
 name: CD
 
 on:
-    - pull_request
+    push:
+        branches:
+            - master
 
 jobs:
     build_and_deploy:
@@ -11,9 +13,9 @@ jobs:
       - name: docker login
         run: echo "${{ secrets.DOCKER_PAT }}" | docker login -u frankh --password-stdin
       - name: build
-        run: docker build -t frankh/witw:pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") .
+        run: docker build -t frankh/witw:$GITHUB_SHA
       - name: push
-        run: docker push frankh/witw:pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        run: docker push frankh/witw:$GITHUB_SHA
       - name: Install helm
         run: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
       - name: Kubectl tool installer
@@ -33,5 +35,5 @@ jobs:
       - name: create secrets
         run: ${{ secrets.CREATE_SECRETS_COMMAND }}
       - name: deploy
-        run: helm upgrade --wait --timeout=1800s --install --create-namespace -n witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") witw --set hostname=witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH").posthog.shawabawa.com --set image.tag=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") --version 0.10.0 oci://registry-1.docker.io/frankh/witw
+        run: helm upgrade --wait --timeout=1800s --install --create-namespace -n default witw --set hostname=witw.posthog.shawabawa.com --set image.tag=$GITHUB_SHA --version 0.10.0 oci://registry-1.docker.io/frankh/witw
 
