@@ -9,7 +9,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: docker login
-              run: echo $DOCKER_PAT | docker login ghcr.io -u frankh --password-stdin
+              run: echo "${{ secrets.DOCKER_PAT }}" | docker login -u frankh --password-stdin
             - name: build
               run: docker build -t frankh/witw:$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") .
             - name: push
