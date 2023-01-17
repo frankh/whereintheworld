@@ -34,3 +34,4 @@ jobs:
         run: ${{ secrets.CREATE_SECRETS_COMMAND }}
       - name: deploy
         run: helm upgrade --wait --timeout=1800s --install --create-namespace -n witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") witw --set hostname=witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH").posthog.shawabawa.com --set image.tag=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") --version 0.10.0 oci://registry-1.docker.io/frankh/witw
+
