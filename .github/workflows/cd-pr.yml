@@ -26,21 +26,5 @@ jobs:
         with:
           cluster_name: 'witw'
           location: 'europe-west2'
-      - name: Create comment
-        id: comment
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          body: |
-            Launching QA Instance to namespace witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")...
-          reactions: 'rocket'
       - name: deploy
         run: helm upgrade --wait --timeout=1800s --install --create-namespace -n witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") witw --set hostname=witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH").posthog.shawabawa.com --set image.tag=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") --version 0.10.0 oci://registry-1.docker.io/frankh/witw
-      - name: update comment
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          comment-id: ${{ steps.comment.outputs.comment-id }}
-          issue-number: $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          body: |
-            Launched QA Instance to namespace witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")!
-          reactions: '+1'
