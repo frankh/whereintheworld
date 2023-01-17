@@ -30,7 +30,7 @@ jobs:
         uses: 'google-github-actions/get-gke-credentials@v1'
         with:
           cluster_name: 'witw'
-          location: 'europe-west-2a'
+          location: 'europe-west2-a'
       - name: deploy
         run: helm upgrade --wait --install --create-namespace -n witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") witw --set hostname=witw-pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH").posthog.shawabawa.com --version 0.10.0 oci://registry-1.docker.io/frankh/witw
 
